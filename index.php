@@ -1,7 +1,7 @@
 <?php
-echo $_SERVER['SERVER_NAME'];
-echo '<br>';
-echo $_SERVER['SERVER_ADDR'];
-echo '<br>';
-echo gethostname();
+echo '<h1>';
+echo 'Het IP van de loadbalancer is: ' . $_SERVER['SERVER_NAME'] . '<br>';
+echo 'Het IP van de webserver is: ' . $_SERVER['SERVER_ADDR'] . '<br>';
+echo 'De hostname is van de webserver is: ' . gethostname();
+echo '</h1>';
 ?>
