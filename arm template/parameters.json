@@ -1,0 +1,121 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "westeurope"
+        },
+        "osDiskType": {
+            "value": "Premium_LRS"
+        },
+        "addressPrefixes": {
+            "value": [
+                "10.0.0.0/16"
+            ]
+        },
+        "subnets": {
+            "value": [
+                {
+                    "name": "default",
+                    "properties": {
+                        "addressPrefix": "10.0.0.0/24"
+                    }
+                }
+            ]
+        },
+        "virtualNetworkId": {
+            "value": "/subscriptions/32910d97-cdd7-4b25-823c-83b0ee1b92b9/resourceGroups/MyResourceGroup/providers/Microsoft.Network/virtualNetworks/MyVNet"
+        },
+        "virtualNetworkName": {
+            "value": "MyVNet"
+        },
+        "networkSecurityGroups": {
+            "value": [
+                {
+                    "name": "basicNsgMyVNet-nic01",
+                    "id": "/subscriptions/32910d97-cdd7-4b25-823c-83b0ee1b92b9/resourceGroups/MyResourceGroup/providers/Microsoft.Network/networkSecurityGroups/basicNsgMyVNet-nic01",
+                    "rules": []
+                }
+            ]
+        },
+        "networkInterfaceConfigurations": {
+            "value": [
+                {
+                    "name": "MyVNet-nic01",
+                    "primary": true,
+                    "subnetId": "/subscriptions/32910d97-cdd7-4b25-823c-83b0ee1b92b9/resourceGroups/MyResourceGroup/providers/Microsoft.Network/virtualNetworks/MyVNet/subnets/default",
+                    "applicationGatewayBackendAddressPools": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/applicationGateways/backendAddressPools', parameters('appGatewayName'), concat(parameters('appGatewayName'), '-backendpool01'))]"
+                        }
+                    ],
+                    "loadBalancerBackendAddressPools": [],
+                    "applicationSecurityGroups": [],
+                    "loadBalancerInboundNatPools": [],
+                    "enableAcceleratedNetworking": true,
+                    "nsgName": "basicNsgMyVNet-nic01",
+                    "nsgId": "/subscriptions/32910d97-cdd7-4b25-823c-83b0ee1b92b9/resourceGroups/MyResourceGroup/providers/Microsoft.Network/networkSecurityGroups/basicNsgMyVNet-nic01",
+                    "pipName": ""
+                }
+            ]
+        },
+        "appGatewayName": {
+            "value": "MyLB"
+        },
+        "appGateWayRuleName": {
+            "value": "MyRule"
+        },
+        "appGateWayRulePort": {
+            "value": 80
+        },
+        "appGateWayRuleProtocol": {
+            "value": "Http"
+        },
+        "vmName": {
+            "value": "MyScaleSet"
+        },
+        "virtualMachineScaleSetName": {
+            "value": "MyScaleSet"
+        },
+        "singlePlacementGroup": {
+            "value": "false"
+        },
+        "instanceCount": {
+            "value": "2"
+        },
+        "instanceSize": {
+            "value": "Standard_DS1_v2"
+        },
+        "scaleInPolicy": {
+            "value": {
+                "rules": [
+                    "Default"
+                ]
+            }
+        },
+        "overprovision": {
+            "value": false
+        },
+        "upgradePolicy": {
+            "value": "Manual"
+        },
+        "adminUsername": {
+            "value": "azureuser"
+        },
+        "adminPublicKey": {
+            "value": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCso5Pa+Pfj9Rtvn6sc9T9lX+WtcRlEcCsIBGon+ZVzMMnwdZOW9x272vT/NY6o66CNDEm3hjIbNYGj0hjAdbYqfCkiMZ7EbvQlKzJnWcCxCFD+O0ap9GgWUMj5/7g9gLBf2Tr8i/ANy7ZkG1jXQ9QstoG567BhixnJWDhW4vNBYu44R6NVdcID1BcYvABdFjPw1q0yXwewIbC8RuyqgyteGtfXjYMWt/sR0mPwkwMuanG76KnM2jxMgo+FlsMrJ+DLcipwi+blNgAbeW/0pwjiQheISgJcrwlDv5sJyXg9vyertRedKhxVARR1wWY7jk9gvLuv6SCGt/GHN0CUcWVCb4cLkp6D+6f9JLjhhb0s7tO6uLEEmrv8jdauKxeLJalwDkGXSHM/tlJPpc/XiobHLg1ayvsFFkW56C12FUesmZJEWR4BdB3iDzFFq67NMbvBIIqFV4V4uEBWr6Ja8XvRU2MBRDtq8+IZln3WocASNhG5nsFSuiHE6RZoYhSM3v0= generated-by-azure"
+        },
+        "platformFaultDomainCount": {
+            "value": "1"
+        },
+        "zone": {
+            "value": [
+                "1",
+                "2"
+            ]
+        },
+        "zoneBalance": {
+            "value": "false"
+        }
+    }
+}
