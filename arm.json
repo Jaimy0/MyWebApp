@@ -1,0 +1,422 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "defaultValue": "westeurope"
+        },
+        "osDiskType": {
+            "type": "string",
+            "defaultValue": "Premium_LRS"
+        },
+        "addressPrefixes": {
+            "type": "array",
+            "defaultValue": [
+                "10.0.0.0/16"
+            ]
+        },
+        "subnets": {
+            "type": "array",
+            "defaultValue": [
+                {
+                    "name": "default",
+                    "properties": {
+                        "addressPrefix": "10.0.0.0/24"
+                    }
+                }
+            ]
+        },
+        "virtualNetworkId": {
+            "type": "string",
+            "defaultValue": "/subscriptions/32910d97-cdd7-4b25-823c-83b0ee1b92b9/resourceGroups/MyResourceGroup/providers/Microsoft.Network/virtualNetworks/MyVNet"
+        },
+        "virtualNetworkName": {
+            "type": "string",
+            "defaultValue": "MyVNet"
+        },
+        "networkSecurityGroups": {
+            "type": "array",
+            "defaultValue": [
+                {
+                    "name": "basicNsgMyVNet-nic01",
+                    "id": "/subscriptions/32910d97-cdd7-4b25-823c-83b0ee1b92b9/resourceGroups/MyResourceGroup/providers/Microsoft.Network/networkSecurityGroups/basicNsgMyVNet-nic01",
+                    "rules": []
+                }
+            ]
+        },
+        "networkInterfaceConfigurations": {
+            "type": "array",
+            "defaultValue": [
+                {
+                    "name": "MyVNet-nic01",
+                    "primary": true,
+                    "subnetId": "/subscriptions/32910d97-cdd7-4b25-823c-83b0ee1b92b9/resourceGroups/MyResourceGroup/providers/Microsoft.Network/virtualNetworks/MyVNet/subnets/default",
+                    "applicationGatewayBackendAddressPools": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/applicationGateways/backendAddressPools', parameters('appGatewayName'), concat(parameters('appGatewayName'), '-backendpool01'))]"
+                        }
+                    ],
+                    "loadBalancerBackendAddressPools": [],
+                    "applicationSecurityGroups": [],
+                    "loadBalancerInboundNatPools": [],
+                    "enableAcceleratedNetworking": true,
+                    "nsgName": "basicNsgMyVNet-nic01",
+                    "nsgId": "/subscriptions/32910d97-cdd7-4b25-823c-83b0ee1b92b9/resourceGroups/MyResourceGroup/providers/Microsoft.Network/networkSecurityGroups/basicNsgMyVNet-nic01",
+                    "pipName": ""
+                }
+            ]
+        },
+        "appGatewayName": {
+            "type": "string",
+            "defaultValue": "MyLB"
+        },
+        "appGateWayRuleName": {
+            "type": "string",
+            "defaultValue": "MyRule"
+        },
+        "appGateWayRulePort": {
+            "type": "int",
+            "defaultValue": 80
+        },
+        "appGateWayRuleProtocol": {
+            "type": "string",
+            "defaultValue": "Http"
+        },
+        "vmName": {
+            "type": "string",
+            "defaultValue": "MyScaleSet"
+        },
+        "virtualMachineScaleSetName": {
+            "type": "string",
+            "defaultValue": "MyScaleSet"
+        },
+        "singlePlacementGroup": {
+            "type": "string",
+            "defaultValue": "false"
+        },
+        "instanceCount": {
+            "type": "string",
+            "defaultValue": "2"
+        },
+        "instanceSize": {
+            "type": "string",
+            "defaultValue": "Standard_DS1_v2"
+        },
+        "scaleInPolicy": {
+            "type": "object",
+            "defaultValue": {
+                "rules": [
+                    "Default"
+                ]
+            }
+        },
+        "overprovision": {
+            "type": "bool",
+            "defaultValue": false
+        },
+        "upgradePolicy": {
+            "type": "string",
+            "defaultValue": "Manual"
+        },
+        "adminUsername": {
+            "type": "string",
+            "defaultValue": "azureuser"
+        },
+        "adminPublicKey": {
+            "type": "secureString",
+            "defaultValue": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCso5Pa+Pfj9Rtvn6sc9T9lX+WtcRlEcCsIBGon+ZVzMMnwdZOW9x272vT/NY6o66CNDEm3hjIbNYGj0hjAdbYqfCkiMZ7EbvQlKzJnWcCxCFD+O0ap9GgWUMj5/7g9gLBf2Tr8i/ANy7ZkG1jXQ9QstoG567BhixnJWDhW4vNBYu44R6NVdcID1BcYvABdFjPw1q0yXwewIbC8RuyqgyteGtfXjYMWt/sR0mPwkwMuanG76KnM2jxMgo+FlsMrJ+DLcipwi+blNgAbeW/0pwjiQheISgJcrwlDv5sJyXg9vyertRedKhxVARR1wWY7jk9gvLuv6SCGt/GHN0CUcWVCb4cLkp6D+6f9JLjhhb0s7tO6uLEEmrv8jdauKxeLJalwDkGXSHM/tlJPpc/XiobHLg1ayvsFFkW56C12FUesmZJEWR4BdB3iDzFFq67NMbvBIIqFV4V4uEBWr6Ja8XvRU2MBRDtq8+IZln3WocASNhG5nsFSuiHE6RZoYhSM3v0= generated-by-azure"
+        },
+        "platformFaultDomainCount": {
+            "type": "string",
+            "defaultValue": "1"
+        },
+        "zone": {
+            "type": "array",
+            "defaultValue": [
+                "1",
+                "2"
+            ]
+        },
+        "zoneBalance": {
+            "type": "string",
+            "defaultValue": "false"
+        }
+    },
+    "variables": {
+        "storageApiVersion": "2019-06-01",
+        "virtualMachineScaleSetApiVersion": "2022-03-01",
+        "namingInfix": "[toLower(substring(concat(parameters('virtualMachineScaleSetName'), uniqueString(resourceGroup().id)), 0, 9))]"
+    },
+    "resources": [
+        {
+            "name": "[parameters('virtualNetworkName')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2021-01-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": "[parameters('addressPrefixes')]"
+                },
+                "subnets": "[parameters('subnets')]"
+            }
+        },
+        {
+            "name": "[parameters('networkSecurityGroups')[copyIndex()].name]",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2019-02-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "securityRules": "[parameters('networkSecurityGroups')[copyIndex()].rules]"
+            },
+            "copy": {
+                "name": "networkSecurityGroups",
+                "count": "[length(parameters('networkSecurityGroups'))]"
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "type": "Microsoft.Resources/deployments",
+            "name": "[concat(parameters('virtualNetworkName'), '-', '1rk-appgwsubnet')]",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {},
+                "template": {
+                    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "variables": {},
+                    "resources": [
+                        {
+                            "name": "[concat(parameters('virtualNetworkName'), '/', '1rk-appgwsubnet')]",
+                            "type": "Microsoft.Network/virtualNetworks/subnets",
+                            "apiVersion": "2019-04-01",
+                            "location": "[parameters('location')]",
+                            "properties": {
+                                "addressPrefix": "10.0.1.0/24"
+                            }
+                        }
+                    ]
+                }
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('appGatewayName'), '-publicip')]",
+            "type": "Microsoft.Network/publicIpAddresses",
+            "apiVersion": "2020-08-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "publicIpAllocationMethod": "Static",
+                "publicIPAddressVersion": "IPv4",
+                "idleTimeoutInMinutes": 15
+            },
+            "sku": {
+                "name": "Standard"
+            },
+            "zones": [
+                "1",
+                "2"
+            ]
+        },
+        {
+            "name": "[parameters('appGatewayName')]",
+            "type": "Microsoft.Network/applicationGateways",
+            "apiVersion": "2021-05-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "sku": {
+                    "name": "Standard_v2",
+                    "tier": "Standard_v2"
+                },
+                "gatewayIPConfigurations": [
+                    {
+                        "name": "[concat(parameters('appGatewayName'), '-gatewayIpConfig01')]",
+                        "properties": {
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), '1rk-appgwsubnet')]"
+                            }
+                        }
+                    }
+                ],
+                "frontendIPConfigurations": [
+                    {
+                        "name": "[concat(parameters('appGatewayName'), '-frontendconfig01')]",
+                        "properties": {
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', concat(parameters('appGatewayName'), '-publicip'))]"
+                            }
+                        }
+                    }
+                ],
+                "frontendPorts": [
+                    {
+                        "name": "[concat('port_', parameters('appGateWayRulePort'))]",
+                        "properties": {
+                            "port": "[parameters('appGateWayRulePort')]"
+                        }
+                    }
+                ],
+                "backendAddressPools": [
+                    {
+                        "name": "[concat(parameters('appGatewayName'), '-backendpool01')]"
+                    }
+                ],
+                "backendHttpSettingsCollection": [
+                    {
+                        "name": "[concat(parameters('appGatewayName'), '-httpSetting01')]",
+                        "properties": {
+                            "port": "[parameters('appGateWayRulePort')]",
+                            "protocol": "[parameters('appGateWayRuleProtocol')]",
+                            "requestTimeout": 15
+                        }
+                    }
+                ],
+                "httpListeners": [
+                    {
+                        "name": "[concat(parameters('appGatewayName'), '-httpListener01')]",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', parameters('appGatewayName'), concat(parameters('appGatewayName'), '-frontendconfig01'))]"
+                            },
+                            "frontendPort": {
+                                "id": "[resourceId('Microsoft.Network/applicationGateways/frontendPorts', parameters('appGatewayName'), concat('port_', parameters('appGateWayRulePort')))]"
+                            },
+                            "protocol": "[parameters('appGateWayRuleProtocol')]"
+                        }
+                    }
+                ],
+                "requestRoutingRules": [
+                    {
+                        "name": "[parameters('appGateWayRuleName')]",
+                        "properties": {
+                            "ruleType": "Basic",
+                            "httpListener": {
+                                "id": "[resourceId('Microsoft.Network/applicationGateways/httpListeners', parameters('appGatewayName'), concat(parameters('appGatewayName'), '-httpListener01'))]"
+                            },
+                            "backendAddressPool": {
+                                "id": "[resourceId('Microsoft.Network/applicationGateways/backendAddressPools', parameters('appGatewayName'), concat(parameters('appGatewayName'), '-backendpool01'))]"
+                            },
+                            "backendHttpSettings": {
+                                "id": "[resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', parameters('appGatewayName'), concat(parameters('appGatewayName'), '-httpSetting01'))]"
+                            }
+                        }
+                    }
+                ],
+                "enableHttp2": true,
+                "autoscaleConfiguration": {
+                    "minCapacity": 2,
+                    "maxCapacity": 10
+                }
+            },
+            "dependsOn": [
+                "[concat(parameters('virtualNetworkName'), '-', '1rk-appgwsubnet')]",
+                "[resourceId('Microsoft.Network/publicIpAddresses', concat(parameters('appGatewayName'), '-publicip'))]"
+            ]
+        },
+        {
+            "name": "[parameters('virtualMachineScaleSetName')]",
+            "type": "Microsoft.Compute/virtualMachineScaleSets",
+            "apiVersion": "[variables('virtualMachineScaleSetApiVersion')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
+                "networkSecurityGroups",
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
+                "[concat('Microsoft.Network/applicationGateways/', parameters('appGatewayName'))]"
+            ],
+            "properties": {
+                "singlePlacementGroup": "[parameters('singlePlacementGroup')]",
+                "virtualMachineProfile": {
+                    "storageProfile": {
+                        "osDisk": {
+                            "createOption": "fromImage",
+                            "caching": "ReadWrite",
+                            "managedDisk": {
+                                "storageAccountType": "[parameters('osDiskType')]"
+                            }
+                        },
+                        "imageReference": {
+                            "id": "/subscriptions/32910d97-cdd7-4b25-823c-83b0ee1b92b9/resourceGroups/MyResourceGroup/providers/Microsoft.Compute/galleries/MyGallery/images/MyImage"
+                        }
+                    },
+                    "networkProfile": {
+                        "copy": [
+                            {
+                                "name": "networkInterfaceConfigurations",
+                                "count": "[length(parameters('networkInterfaceConfigurations'))]",
+                                "input": {
+                                    "name": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].name]",
+                                    "properties": {
+                                        "primary": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].primary]",
+                                        "enableAcceleratedNetworking": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].enableAcceleratedNetworking]",
+                                        "ipConfigurations": [
+                                            {
+                                                "name": "[concat(take(parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].name, sub(80, length('-defaultIpConfiguration'))), '-defaultIpConfiguration')]",
+                                                "properties": {
+                                                    "subnet": {
+                                                        "id": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].subnetId]"
+                                                    },
+                                                    "primary": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].primary]",
+                                                    "applicationGatewayBackendAddressPools": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].applicationGatewayBackendAddressPools]",
+                                                    "loadBalancerBackendAddressPools": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].loadBalancerBackendAddressPools]",
+                                                    "publicIPAddressConfiguration": "[if( equals( parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].pipName, ''), json('null'), union(json(concat('{\"name\": \"', parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].pipName, '\"}'))\n        ,json('{\"properties\": { \"idleTimeoutInMinutes\": 15}}')))]",
+                                                    "loadBalancerInboundNatPools": "[parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].loadBalancerInboundNatPools]"
+                                                }
+                                            }
+                                        ],
+                                        "networkSecurityGroup": "[if( equals( parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].nsgId, ''), json('null'),json(concat('{\"id\": \"', parameters('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].nsgId, '\"}')))]"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "extensionProfile": {
+                        "extensions": []
+                    },
+                    "diagnosticsProfile": {
+                        "bootDiagnostics": {
+                            "enabled": true
+                        }
+                    },
+                    "osProfile": {
+                        "computerNamePrefix": "[variables('namingInfix')]",
+                        "adminUsername": "[parameters('adminUsername')]",
+                        "linuxConfiguration": {
+                            "disablePasswordAuthentication": true,
+                            "ssh": {
+                                "publicKeys": [
+                                    {
+                                        "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+                                        "keyData": "[parameters('adminPublicKey')]"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "orchestrationMode": "Uniform",
+                "scaleInPolicy": "[parameters('scaleInPolicy')]",
+                "overprovision": "[parameters('overprovision')]",
+                "upgradePolicy": {
+                    "mode": "[parameters('upgradePolicy')]"
+                },
+                "platformFaultDomainCount": "[parameters('platformFaultDomainCount')]",
+                "zoneBalance": "[parameters('zoneBalance')]"
+            },
+            "sku": {
+                "name": "[parameters('instanceSize')]",
+                "capacity": "[int(parameters('instanceCount'))]"
+            },
+            "zones": "[parameters('zone')]"
+        }
+    ],
+    "outputs": {
+        "adminUsername": {
+            "type": "string",
+            "value": "[parameters('adminUsername')]"
+        }
+    }
+}
